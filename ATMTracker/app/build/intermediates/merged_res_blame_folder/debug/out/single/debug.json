@@ -1,0 +1,94 @@
+[
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_item_line_header.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/item_line_header.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_item_line_card.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/item_line_card.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "com.atm.tracker.app-main-36:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_fragment_search.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/fragment_search.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_fragment_favorites.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/fragment_favorites.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/drawable_ic_heart_outline.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/drawable/ic_heart_outline.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "com.atm.tracker.app-main-36:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_fragment_map.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/fragment_map.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/color_bottom_nav_item.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/color/bottom_nav_item.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/menu_bottom_nav_menu.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/menu/bottom_nav_menu.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/color_nav_item_color.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/color/nav_item_color.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "com.atm.tracker.app-main-36:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/drawable_badge_line.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/drawable/badge_line.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/drawable_ic_stop_marker.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/drawable/ic_stop_marker.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_bottom_sheet_stop.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/bottom_sheet_stop.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_fragment_line.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/fragment_line.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_item_favorite.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/item_favorite.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_item_stop_row.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/item_stop_row.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/drawable_ic_heart_filled.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/drawable/ic_heart_filled.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/xml_network_security_config.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "com.atm.tracker.app-main-36:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "com.atm.tracker.app-main-36:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "com.atm.tracker.app-merged_res-34:/layout_activity_main.xml.flat",
+        "source": "com.atm.tracker.app-main-36:/layout/activity_main.xml"
+    }
+]

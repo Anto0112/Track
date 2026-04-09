@@ -1,0 +1,181 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.atm.tracker"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="26"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:5:5-67
+11-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:5:22-64
+12    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+12-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:6:5-79
+12-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:6:22-76
+13    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+13-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:7:5-81
+13-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:7:22-78
+14    <uses-permission
+14-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:8:5-9:37
+15        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+15-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:8:22-78
+16        android:maxSdkVersion="28" />
+16-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:9:9-35
+17
+18    <supports-screens
+18-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:9:5-12:40
+19        android:anyDensity="true"
+19-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:10:9-34
+20        android:largeScreens="true"
+20-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:11:9-36
+21        android:normalScreens="true" />
+21-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:12:9-37
+22
+23    <uses-feature
+23-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:14:5-16:36
+24        android:name="android.hardware.location.network"
+24-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:15:9-57
+25        android:required="false" />
+25-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:16:9-33
+26    <uses-feature
+26-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:17:5-19:36
+27        android:name="android.hardware.location.gps"
+27-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:18:9-53
+28        android:required="false" />
+28-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:19:9-33
+29    <uses-feature
+29-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:20:5-22:36
+30        android:name="android.hardware.telephony"
+30-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:21:9-50
+31        android:required="false" />
+31-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:22:9-33
+32    <uses-feature
+32-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:23:5-25:36
+33        android:name="android.hardware.wifi"
+33-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:24:9-45
+34        android:required="false" />
+34-->[org.osmdroid:osmdroid-android:6.1.18] C:\Users\amodio_antonella\.gradle\caches\transforms-3\90985f91f1c10239a5fb62f4fa101b7d\transformed\jetified-osmdroid-android-6.1.18\AndroidManifest.xml:25:9-33
+35
+36    <permission
+36-->[androidx.core:core:1.12.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\de8c3b838232e943fc8a6a53f2c25d4a\transformed\core-1.12.0\AndroidManifest.xml:22:5-24:47
+37        android:name="com.atm.tracker.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+37-->[androidx.core:core:1.12.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\de8c3b838232e943fc8a6a53f2c25d4a\transformed\core-1.12.0\AndroidManifest.xml:23:9-81
+38        android:protectionLevel="signature" />
+38-->[androidx.core:core:1.12.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\de8c3b838232e943fc8a6a53f2c25d4a\transformed\core-1.12.0\AndroidManifest.xml:24:9-44
+39
+40    <uses-permission android:name="com.atm.tracker.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+40-->[androidx.core:core:1.12.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\de8c3b838232e943fc8a6a53f2c25d4a\transformed\core-1.12.0\AndroidManifest.xml:26:5-97
+40-->[androidx.core:core:1.12.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\de8c3b838232e943fc8a6a53f2c25d4a\transformed\core-1.12.0\AndroidManifest.xml:26:22-94
+41
+42    <application
+42-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:11:5-30:19
+43        android:allowBackup="true"
+43-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:12:9-35
+44        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+44-->[androidx.core:core:1.12.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\de8c3b838232e943fc8a6a53f2c25d4a\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
+45        android:debuggable="true"
+46        android:enableOnBackInvokedCallback="true"
+46-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:19:9-51
+47        android:extractNativeLibs="false"
+48        android:icon="@mipmap/ic_launcher"
+48-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:13:9-43
+49        android:label="@string/app_name"
+49-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:15:9-41
+50        android:networkSecurityConfig="@xml/network_security_config"
+50-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:18:9-69
+51        android:roundIcon="@mipmap/ic_launcher"
+51-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:14:9-48
+52        android:theme="@style/Theme.ATMTracker"
+52-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:16:9-48
+53        android:usesCleartextTraffic="true" >
+53-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:17:9-44
+54        <activity
+54-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:21:9-29:20
+55            android:name="com.atm.tracker.MainActivity"
+55-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:22:13-41
+56            android:exported="true"
+56-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:23:13-36
+57            android:windowSoftInputMode="adjustResize" >
+57-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:24:13-55
+58            <intent-filter>
+58-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:25:13-28:29
+59                <action android:name="android.intent.action.MAIN" />
+59-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:26:17-69
+59-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:26:25-66
+60
+61                <category android:name="android.intent.category.LAUNCHER" />
+61-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:27:17-77
+61-->C:\Users\amodio_antonella\Downloads\ATMTracker\app\src\main\AndroidManifest.xml:27:27-74
+62            </intent-filter>
+63        </activity>
+64
+65        <provider
+65-->[androidx.emoji2:emoji2:1.2.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\6db5aa862a49de8667f2a7b9b0bf2022\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+66            android:name="androidx.startup.InitializationProvider"
+66-->[androidx.emoji2:emoji2:1.2.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\6db5aa862a49de8667f2a7b9b0bf2022\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
+67            android:authorities="com.atm.tracker.androidx-startup"
+67-->[androidx.emoji2:emoji2:1.2.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\6db5aa862a49de8667f2a7b9b0bf2022\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
+68            android:exported="false" >
+68-->[androidx.emoji2:emoji2:1.2.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\6db5aa862a49de8667f2a7b9b0bf2022\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
+69            <meta-data
+69-->[androidx.emoji2:emoji2:1.2.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\6db5aa862a49de8667f2a7b9b0bf2022\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+70                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+70-->[androidx.emoji2:emoji2:1.2.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\6db5aa862a49de8667f2a7b9b0bf2022\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
+71                android:value="androidx.startup" />
+71-->[androidx.emoji2:emoji2:1.2.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\6db5aa862a49de8667f2a7b9b0bf2022\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+72            <meta-data
+72-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\amodio_antonella\.gradle\caches\transforms-3\adfd241d31aa0dc8d9176e9f5dfaa47e\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:29:13-31:52
+73                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+73-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\amodio_antonella\.gradle\caches\transforms-3\adfd241d31aa0dc8d9176e9f5dfaa47e\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:30:17-78
+74                android:value="androidx.startup" />
+74-->[androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\amodio_antonella\.gradle\caches\transforms-3\adfd241d31aa0dc8d9176e9f5dfaa47e\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:31:17-49
+75            <meta-data
+75-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:29:13-31:52
+76                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+76-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:30:17-85
+77                android:value="androidx.startup" />
+77-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:31:17-49
+78        </provider>
+79
+80        <receiver
+80-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:34:9-52:20
+81            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+81-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:35:13-76
+82            android:directBootAware="false"
+82-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:36:13-44
+83            android:enabled="true"
+83-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:37:13-35
+84            android:exported="true"
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:38:13-36
+85            android:permission="android.permission.DUMP" >
+85-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:39:13-57
+86            <intent-filter>
+86-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:40:13-42:29
+87                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+87-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:41:17-91
+87-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:41:25-88
+88            </intent-filter>
+89            <intent-filter>
+89-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:43:13-45:29
+90                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+90-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:44:17-85
+90-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:44:25-82
+91            </intent-filter>
+92            <intent-filter>
+92-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:46:13-48:29
+93                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+93-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:47:17-88
+93-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:47:25-85
+94            </intent-filter>
+95            <intent-filter>
+95-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:49:13-51:29
+96                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+96-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:17-95
+96-->[androidx.profileinstaller:profileinstaller:1.3.0] C:\Users\amodio_antonella\.gradle\caches\transforms-3\0db8f035745ab68a2782efc838399652\transformed\jetified-profileinstaller-1.3.0\AndroidManifest.xml:50:25-92
+97            </intent-filter>
+98        </receiver>
+99    </application>
+100
+101</manifest>

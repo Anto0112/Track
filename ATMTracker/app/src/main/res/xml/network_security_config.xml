@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Trust system + user certs per tutti i domini (fix emulatore) -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system"/>
+            <certificates src="user"/>
+        </trust-anchors>
+    </base-config>
+    <!-- ATM API e Nominatim: solo HTTPS -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">giromilano.atm.it</domain>
+        <domain includeSubdomains="true">nominatim.openstreetmap.org</domain>
+        <trust-anchors>
+            <certificates src="system"/>
+            <certificates src="user"/>
+        </trust-anchors>
+    </domain-config>
+    <!-- OSM tile server: HTTPS (OsmTrustAllTileSource usa già https://) -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">openstreetmap.org</domain>
+        <trust-anchors>
+            <certificates src="system"/>
+            <certificates src="user"/>
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

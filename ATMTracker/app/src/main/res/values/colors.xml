@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="atm_red">#E8001D</color>
+    <color name="atm_red_dark">#B0001A</color>
+    <color name="atm_blue">#0266ad</color>
+    <color name="atm_blue_dark">#014f8a</color>
+    <color name="white">#FFFFFF</color>
+    <color name="green_wait">#00C853</color>
+    <!-- Adattivo light/dark: viene sovrascritto in values-night -->
+    <color name="stop_name_text">#000000</color>
+</resources>

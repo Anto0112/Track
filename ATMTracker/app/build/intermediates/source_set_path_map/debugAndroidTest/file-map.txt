@@ -1,0 +1,4 @@
+com.atm.tracker.test.app-androidTest-0 C:\Users\amodio_antonella\Downloads\ATMTracker\app\build\generated\res\resValues\androidTest\debug
+com.atm.tracker.test.app-mergeDebugAndroidTestResources-1 C:\Users\amodio_antonella\Downloads\ATMTracker\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.atm.tracker.test.app-mergeDebugAndroidTestResources-2 C:\Users\amodio_antonella\Downloads\ATMTracker\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.atm.tracker.test.app-merged_res-3 C:\Users\amodio_antonella\Downloads\ATMTracker\app\build\intermediates\merged_res\debugAndroidTest

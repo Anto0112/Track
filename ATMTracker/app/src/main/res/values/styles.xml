@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ATMTracker" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/atm_blue</item>
+        <item name="colorPrimaryVariant">@color/atm_blue_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:statusBarColor">@color/atm_blue</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

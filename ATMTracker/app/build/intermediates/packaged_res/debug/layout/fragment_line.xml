@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:padding="12dp" android:elevation="4dp">
+        <EditText android:id="@+id/line_input" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:hint="Numero linea (es. 45, 38, S5…)" android:imeOptions="actionSearch"
+            android:inputType="text" android:maxLines="1" android:textSize="16sp"/>
+        <com.google.android.material.button.MaterialButton android:id="@+id/btn_search_line"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" android:text="Cerca"
+            style="@style/Widget.Material3.Button"/>
+    </LinearLayout>
+    <TextView android:id="@+id/tv_line_status" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:padding="8dp" android:textSize="12sp"/>
+    <ProgressBar android:id="@+id/progress_line" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:visibility="gone"
+        android:indeterminate="true" style="@style/Widget.AppCompat.ProgressBar.Horizontal"/>
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/recycler_line"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:paddingBottom="8dp" android:clipToPadding="false"/>
+</LinearLayout>
