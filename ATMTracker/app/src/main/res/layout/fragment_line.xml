@@ -3,11 +3,20 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal" android:padding="12dp" android:elevation="4dp">
+        android:orientation="horizontal" android:padding="12dp" android:elevation="4dp"
+        android:gravity="center_vertical">
         <EditText android:id="@+id/line_input" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
             android:hint="Numero linea (es. 45, 38, S5…)" android:imeOptions="actionSearch"
             android:inputType="text" android:maxLines="1" android:textSize="16sp"/>
+        <ImageButton
+            android:id="@+id/btn_clear_line"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone"
+            android:contentDescription="Cancella"/>
         <com.google.android.material.button.MaterialButton android:id="@+id/btn_search_line"
             android:layout_width="wrap_content" android:layout_height="wrap_content"
             android:layout_marginStart="8dp" android:text="Cerca"

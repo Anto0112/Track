@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import org.osmdroid.util.GeoPoint;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -50,8 +52,15 @@ public class SearchFragment extends Fragment {
     private static final Handler UI = new Handler(Looper.getMainLooper());
     private static final ExecutorService POOL = Executors.newFixedThreadPool(2);
 
+    // Timeout in ms per ogni tentativo
+    private static final int CONNECT_TIMEOUT_MS = 8_000;
+    private static final int READ_TIMEOUT_MS    = 12_000;
+    // Numero massimo di tentativi per la ricerca principale (autocomplete non riprova)
+    private static final int MAX_RETRIES = 2;
+
     private OnSearchResultListener listener;
     private EditText     searchInput;
+    private ImageButton  btnClearSearch;
     private ProgressBar  progressSearch;
     private TextView     tvStatus;
     private ListView     suggestionsList;
@@ -81,11 +90,12 @@ public class SearchFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedState) {
         super.onViewCreated(view, savedState);
-        searchInput     = view.findViewById(R.id.search_input);
-        progressSearch  = view.findViewById(R.id.progress_search);
-        tvStatus        = view.findViewById(R.id.tv_status);
+        searchInput    = view.findViewById(R.id.search_input);
+        btnClearSearch = view.findViewById(R.id.btn_clear_search);
+        progressSearch = view.findViewById(R.id.progress_search);
+        tvStatus       = view.findViewById(R.id.tv_status);
         suggestionsList = view.findViewById(R.id.suggestions_list);
-        Button btn      = view.findViewById(R.id.btn_search);
+        Button btn     = view.findViewById(R.id.btn_search);
 
         suggestionsAdapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_list_item_1, suggestionNames);
@@ -109,31 +119,52 @@ public class SearchFragment extends Fragment {
         });
         btn.setOnClickListener(v -> doSearch(searchInput.getText().toString().trim()));
 
+        btnClearSearch.setOnClickListener(v -> searchInput.setText(""));
+
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             @Override public void afterTextChanged(Editable s) {}
             @Override public void onTextChanged(CharSequence s, int x, int y, int z) {
+                boolean hasText = s.length() > 0;
+                btnClearSearch.setVisibility(hasText ? View.VISIBLE : View.GONE);
+
                 String q = s.toString().trim();
                 if (debounceRunnable != null) debounceHandler.removeCallbacks(debounceRunnable);
-                if (q.length() < 3) { hideSuggestions(); cancelSuggest(); return; }
+
+                if (q.isEmpty()) {
+                    hideSuggestions();
+                    cancelSuggest();
+                    tvStatus.setText("");
+                    progressSearch.setVisibility(View.GONE);
+                    return;
+                }
+
+                if (q.length() < 2) { hideSuggestions(); cancelSuggest(); return; }
+
                 debounceRunnable = () -> fetchSuggestions(q);
-                debounceHandler.postDelayed(debounceRunnable, 400);
+                debounceHandler.postDelayed(debounceRunnable, 200);
             }
         });
     }
 
-    // ── Nominatim via HttpURLConnection (nessun OkHttp/interceptor) ──────
+    // ── Nominatim HTTP ───────────────────────────────────────────────────
 
+    /**
+     * Esegue una GET su Nominatim con timeout espliciti.
+     * Ritorna sempre una stringa JSON valida (almeno "[]") — non lancia mai
+     * in caso di risposta HTTP non-200, solo in caso di errore di rete.
+     */
     private String nominatimGet(String url) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setConnectTimeout(8000);
-        conn.setReadTimeout(12000);
+        conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        conn.setReadTimeout(READ_TIMEOUT_MS);
         conn.setRequestProperty("User-Agent", "ATMTracker/1.0");
         conn.setRequestProperty("Accept", "application/json");
         try {
             int code = conn.getResponseCode();
             if (code != 200) return "[]";
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream()));
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) sb.append(line);
@@ -143,12 +174,32 @@ public class SearchFragment extends Fragment {
         }
     }
 
+    /**
+     * Come nominatimGet, ma riprova automaticamente fino a {@code maxRetries}
+     * volte in caso di SocketTimeoutException, con un breve ritardo tra i tentativi.
+     * Usato solo per la ricerca principale (non per l'autocomplete).
+     */
+    private String nominatimGetWithRetry(String url, int maxRetries) throws Exception {
+        Exception lastEx = null;
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                return nominatimGet(url);
+            } catch (SocketTimeoutException e) {
+                lastEx = e;
+                if (attempt < maxRetries) {
+                    // Piccola pausa prima del prossimo tentativo
+                    Thread.sleep(500);
+                }
+            }
+            // Errori non-timeout (es. no network) vengono rilanciati subito
+        }
+        throw lastEx != null ? lastEx : new Exception("Impossibile contattare il server");
+    }
+
     // ── Autocomplete ──────────────────────────────────────────────────────
 
-    // Bounding box Milano città e provincia
-    private static final String BOX_CITY     = "9.03,45.39,9.28,45.53"; // Milano comune
-    private static final String BOX_PROVINCE = "8.70,45.25,9.50,45.70"; // Provincia MI
-
+    private static final String BOX_CITY     = "9.03,45.39,9.28,45.53";
+    private static final String BOX_PROVINCE = "8.70,45.25,9.50,45.70";
 
     private void fetchSuggestions(String query) {
         if (!isAdded()) return;
@@ -157,9 +208,8 @@ public class SearchFragment extends Fragment {
         String enc;
         try { enc = URLEncoder.encode(query, "UTF-8"); } catch (Exception e) { return; }
 
-        // Due URL: città (bounded) e provincia (preferenza)
         String urlCity = BASE + "?q=" + enc
-                + "%2C+Milano"          // aggiunge ", Milano" encodato
+                + "%2C+Milano"
                 + "&format=json&limit=15&dedupe=1&addressdetails=1&countrycodes=it"
                 + "&viewbox=" + BOX_CITY + "&bounded=1";
         String urlProv = BASE + "?q=" + enc
@@ -169,13 +219,12 @@ public class SearchFragment extends Fragment {
 
         lastSuggestFuture = POOL.submit(() -> {
             try {
-                // Prima richiesta: Milano città (bounded → risponde prima e più precisa)
+                // L'autocomplete non usa retry: se è lento, ignora silenziosamente
                 String bodyCity = nominatimGet(urlCity);
                 if (suggestCancelled || !isAdded()) return;
                 List<String>   names  = parseResults(bodyCity, 10);
                 List<GeoPoint> points = parsePoints(bodyCity, 10);
 
-                // Mostra subito i risultati città
                 if (!names.isEmpty()) {
                     UI.post(() -> {
                         if (suggestCancelled || !isAdded()) return;
@@ -186,7 +235,6 @@ public class SearchFragment extends Fragment {
                     });
                 }
 
-                // Seconda richiesta: provincia (aggiunge risultati mancanti)
                 String bodyProv = nominatimGet(urlProv);
                 if (suggestCancelled || !isAdded()) return;
                 List<String>   namesP  = parseResults(bodyProv, 20);
@@ -194,7 +242,6 @@ public class SearchFragment extends Fragment {
 
                 UI.post(() -> {
                     if (suggestCancelled || !isAdded()) return;
-                    // Unisci: città prima, poi provincia senza duplicati
                     Set<String> seen = new LinkedHashSet<>(names);
                     List<String>   merged  = new ArrayList<>(names);
                     List<GeoPoint> mergedP = new ArrayList<>(points);
@@ -209,7 +256,9 @@ public class SearchFragment extends Fragment {
                     suggestionsAdapter.notifyDataSetChanged();
                     suggestionsList.setVisibility(merged.isEmpty() ? View.GONE : View.VISIBLE);
                 });
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+                // Autocomplete: fail silenzioso, l'utente può comunque premere Cerca
+            }
         });
     }
 
@@ -243,13 +292,16 @@ public class SearchFragment extends Fragment {
                 String cls = obj.optString("class", "");
                 if (cls.equals("boundary") || cls.equals("waterway")) continue;
                 String label = buildLabel(obj, obj.optJSONObject("address"));
-                if (!label.isEmpty()) { list.add(new GeoPoint(obj.getDouble("lat"), obj.getDouble("lon"))); count++; }
+                if (!label.isEmpty()) {
+                    list.add(new GeoPoint(obj.getDouble("lat"), obj.getDouble("lon")));
+                    count++;
+                }
             }
         } catch (Exception ignored) {}
         return list;
     }
 
-    // ── Ricerca principale ────────────────────────────────────────────────
+    // ── Ricerca principale (con retry) ───────────────────────────────────
 
     private void doSearch(String query) {
         if (query.isEmpty()) return;
@@ -266,7 +318,8 @@ public class SearchFragment extends Fragment {
 
         POOL.submit(() -> {
             try {
-                String body = nominatimGet(url);
+                // Usa retry: fino a MAX_RETRIES tentativi prima di arrendersi
+                String body = nominatimGetWithRetry(url, MAX_RETRIES);
                 if (!isAdded()) return;
                 String t = body.trim();
                 UI.post(() -> {
@@ -282,11 +335,17 @@ public class SearchFragment extends Fragment {
                         tvStatus.setText("Indirizzo non trovato");
                     }
                 });
+            } catch (SocketTimeoutException e) {
+                UI.post(() -> {
+                    if (!isAdded()) return;
+                    progressSearch.setVisibility(View.GONE);
+                    tvStatus.setText("Connessione lenta, riprova");
+                });
             } catch (Exception e) {
                 UI.post(() -> {
                     if (!isAdded()) return;
                     progressSearch.setVisibility(View.GONE);
-                    tvStatus.setText("Errore connessione");
+                    tvStatus.setText("Nessuna connessione");
                 });
             }
         });

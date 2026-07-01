@@ -273,6 +273,19 @@ public class StopDetailBottomSheet extends BottomSheetDialogFragment {
             }
         }
 
+        // ── Tap sulla card → apre la linea nella sezione "Linea", evidenziando
+        //    la fermata corrente, senza doverla cercare a mano ───────────────
+        final String lineForOpen = lineCode;
+        card.setClickable(true);
+        card.setFocusable(true);
+        card.setOnClickListener(v -> {
+            androidx.fragment.app.FragmentActivity act = getActivity();
+            if (act instanceof com.atm.tracker.MainActivity) {
+                ((com.atm.tracker.MainActivity) act).openLine(lineForOpen, code());
+            }
+            dismissAllowingStateLoss();
+        });
+
         linesContainer.addView(card);
     }
 
@@ -354,7 +367,7 @@ public class StopDetailBottomSheet extends BottomSheetDialogFragment {
     private String capolinea(String desc, String direction) {
         String[] p = desc.split(" - ", 2);
         if (p.length < 2) return desc;
-        return "0".equals(direction) ? p[1].trim() : p[0].trim();
+        return p[1].trim();
     }
 
     private String code() {

@@ -83,4 +83,20 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView nav = findViewById(R.id.bottom_nav);
         nav.setSelectedItemId(R.id.nav_map);
     }
+
+    /**
+     * Apre la sezione "Linea" cercando direttamente la linea indicata, senza
+     * obbligare l'utente a digitarla. Se {@code highlightStopCode} è valorizzato,
+     * quella fermata viene evidenziata e portata in vista a caricamento ultimato.
+     *
+     * Chiamato dalle card linea dello StopDetailBottomSheet: tap su "12 → ..."
+     * apre la linea 12 ed evidenzia la fermata di provenienza.
+     */
+    public void openLine(String lineCode, String highlightStopCode) {
+        BottomNavigationView nav = findViewById(R.id.bottom_nav);
+        nav.setSelectedItemId(R.id.nav_line);
+        if (lineFragment != null) {
+            lineFragment.openLine(lineCode, highlightStopCode);
+        }
+    }
 }

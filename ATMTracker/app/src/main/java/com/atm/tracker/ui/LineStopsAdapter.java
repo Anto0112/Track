@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -19,25 +20,28 @@ public class LineStopsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_STOP   = 1;
 
-    public interface OnStopClickListener  { void onClick(StopItem item); }
-
-    /** Chiamato quando una riga fermata diventa visibile per la prima volta → carica il tempo */
-    public interface OnStopVisibleListener { void onVisible(StopItem item); }
+    public interface OnStopClickListener    { void onClick(StopItem item); }
+    public interface OnStopVisibleListener  { void onVisible(StopItem item); }
+    public interface OnHeaderSwapListener   { void onSwap(); }
 
     public static class StopItem {
         public boolean isHeader;
         public String  headerText;
+        public boolean headerShowSwap; // true → mostra il tasto inverti su questo header
         public String  customerCode;
         public String  description;
-        public String  waitMessage;   // null = non ancora caricato
-        public String  lineCode;         // linea cercata (per filtrare waitMessage)
-        public boolean loading = false; // true = richiesta in corso
-        public boolean loaded  = false; // true = dato già ricevuto (non ricaricare)
+        public String  waitMessage;
+        public String  lineCode;
+        public boolean loading = false;
+        public boolean loaded  = false;
+        /** true → questa fermata è quella di provenienza e va evidenziata */
+        public boolean highlight = false;
     }
 
-    private final List<StopItem>    items;
+    private final List<StopItem>     items;
     private final OnStopClickListener   clickListener;
     private       OnStopVisibleListener visibleListener;
+    private       OnHeaderSwapListener  swapListener;
 
     public LineStopsAdapter(List<StopItem> items, OnStopClickListener clickListener) {
         this.items         = items;
@@ -45,6 +49,7 @@ public class LineStopsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public void setOnStopVisibleListener(OnStopVisibleListener l) { this.visibleListener = l; }
+    public void setOnHeaderSwapListener(OnHeaderSwapListener l)   { this.swapListener = l; }
 
     @Override public int getItemViewType(int pos) {
         return items.get(pos).isHeader ? TYPE_HEADER : TYPE_STOP;
@@ -62,7 +67,14 @@ public class LineStopsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         StopItem item = items.get(position);
         if (holder instanceof HeaderVH) {
-            ((HeaderVH) holder).tvHeader.setText(item.headerText);
+            HeaderVH hvh = (HeaderVH) holder;
+            hvh.tvHeader.setText(item.headerText);
+            if (item.headerShowSwap && swapListener != null) {
+                hvh.btnSwap.setVisibility(View.VISIBLE);
+                hvh.btnSwap.setOnClickListener(v -> swapListener.onSwap());
+            } else {
+                hvh.btnSwap.setVisibility(View.GONE);
+            }
             return;
         }
 
@@ -71,11 +83,9 @@ public class LineStopsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         vh.tvCode.setText(item.customerCode);
 
         if (item.loading) {
-            // Richiesta in volo: mostra spinner
             vh.progress.setVisibility(View.VISIBLE);
             vh.tvWait.setVisibility(View.GONE);
         } else if (item.loaded) {
-            // Dato ricevuto: mostra risultato
             vh.progress.setVisibility(View.GONE);
             vh.tvWait.setVisibility(View.VISIBLE);
             if (item.waitMessage != null && !item.waitMessage.isEmpty()) {
@@ -86,25 +96,37 @@ public class LineStopsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 vh.tvWait.setTextColor(Color.GRAY);
             }
         } else {
-            // Non ancora richiesto: nascondi e triggera il caricamento
             vh.progress.setVisibility(View.GONE);
             vh.tvWait.setVisibility(View.INVISIBLE);
             if (visibleListener != null && !item.loading && !item.loaded) {
-                item.loading = true;          // subito: evita doppie richieste
+                item.loading = true;
                 visibleListener.onVisible(item);
             }
         }
 
         vh.itemView.setOnClickListener(v -> clickListener.onClick(item));
+
+        // Evidenziazione fermata di provenienza (recycling-safe: ripristina sempre)
+        if (item.highlight) {
+            vh.itemView.setBackgroundColor(android.graphics.Color.parseColor("#330266AD"));
+        } else {
+            android.util.TypedValue tv = new android.util.TypedValue();
+            vh.itemView.getContext().getTheme().resolveAttribute(
+                    android.R.attr.selectableItemBackground, tv, true);
+            vh.itemView.setBackgroundResource(tv.resourceId);
+        }
     }
 
     @Override public int getItemCount() { return items.size(); }
 
-    // ── ViewHolder ───────────────────────────────────────────────────────
-
     static class HeaderVH extends RecyclerView.ViewHolder {
-        TextView tvHeader;
-        HeaderVH(View v) { super(v); tvHeader = v.findViewById(R.id.tv_header); }
+        TextView    tvHeader;
+        ImageButton btnSwap;
+        HeaderVH(View v) {
+            super(v);
+            tvHeader = v.findViewById(R.id.tv_header);
+            btnSwap  = v.findViewById(R.id.btn_swap_dir);
+        }
     }
 
     static class StopVH extends RecyclerView.ViewHolder {

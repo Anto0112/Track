@@ -20,7 +20,7 @@
             android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- Input + Bottone -->
+    <!-- Input + Clear + Bottone -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,6 +36,14 @@
             android:imeOptions="actionSearch"
             android:inputType="textNoSuggestions"
             android:singleLine="true"/>
+        <ImageButton
+            android:id="@+id/btn_clear_search"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:visibility="gone"
+            android:contentDescription="Cancella"/>
         <Button
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
@@ -46,7 +54,7 @@
             android:textColor="#FFFFFF"/>
     </LinearLayout>
 
-    <!-- Suggerimenti autocomplete (max 4, visibili solo durante la digitazione) -->
+    <!-- Suggerimenti autocomplete -->
     <ListView
         android:id="@+id/suggestions_list"
         android:layout_width="match_parent"

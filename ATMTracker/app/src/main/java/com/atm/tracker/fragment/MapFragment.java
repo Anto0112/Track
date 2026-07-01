@@ -47,6 +47,7 @@ import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -136,7 +137,6 @@ public class MapFragment extends Fragment {
 
     // ── Setup mappa ──────────────────────────────────────────────────────
 
-
     /** Crea un bitmap con cerchio blu (bordo bianco) per la posizione corrente */
     private Bitmap createBlueDotBitmap() {
         float density = requireContext().getResources().getDisplayMetrics().density;
@@ -173,11 +173,9 @@ public class MapFragment extends Fragment {
                 new GpsMyLocationProvider(requireContext()), mapView);
         myLocationOverlay.enableMyLocation();
         myLocationOverlay.disableFollowLocation();
-        // Rimpiazza l'omino con un semplice pallino blu
         Bitmap blueDot = createBlueDotBitmap();
         myLocationOverlay.setPersonIcon(blueDot);
         myLocationOverlay.setDirectionIcon(blueDot);
-        // Ancora al centro esatto del bitmap (default è 0.5/1.0 = piede)
         myLocationOverlay.setPersonAnchor(0.5f, 0.5f);
         myLocationOverlay.setDirectionAnchor(0.5f, 0.5f);
         mapView.getOverlays().add(myLocationOverlay);
@@ -236,36 +234,43 @@ public class MapFragment extends Fragment {
         centerAndLoad(pos);
     }
 
-    // ── Carica fermate e POPOLA CACHE ────────────────────────────────────
+    // ── Carica fermate vicine ────────────────────────────────────────────
 
     public void loadNearbyStops(GeoPoint center) {
         progressBar.setVisibility(View.VISIBLE);
-        final int myId = searchId; // cattura l'ID di questa ricerca
+        final int myId = searchId;
+
         ApiClient.get().getNearestPatterns(RADIUS_M, center.getLatitude(), center.getLongitude())
                 .enqueue(new Callback<NearestResponse>() {
                     @Override public void onResponse(@NonNull Call<NearestResponse> c,
                                                      @NonNull Response<NearestResponse> r) {
-                        if (!isAdded() || myId != searchId) return; // risposta stale: ignora
+                        if (!isAdded() || myId != searchId) return;
                         NearestResponse body = r.body();
                         if (body == null || body.journeyPatterns == null) {
-                            progressBar.setVisibility(View.GONE); return;
+                            progressBar.setVisibility(View.GONE);
+                            showToast("Nessuna fermata trovata in zona");
+                            return;
                         }
                         fetchStopsAndCache(body.journeyPatterns, center, myId);
                     }
+
                     @Override public void onFailure(@NonNull Call<NearestResponse> c,
                                                     @NonNull Throwable t) {
                         if (!isAdded()) return;
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(getContext(), "Errore: " + t.getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                        // Distingue timeout da assenza di connessione
+                        if (t instanceof SocketTimeoutException) {
+                            showToast("ATM non risponde — tocca la mappa per riprovare");
+                        } else {
+                            showToast("Nessuna connessione — controlla la rete");
+                        }
+                        Log.w(TAG, "loadNearbyStops failed", t);
                     }
                 });
     }
 
     /**
-     * Per ogni pattern: scarica le fermate, piazza i marker E popola la cache
-     * patternRouteCache / stopPatternIds / patternLineCode.
-     * Così quando l'utente clicca una fermata il percorso è già in memoria.
+     * Per ogni pattern: scarica le fermate, piazza i marker E popola la cache.
      */
     private void fetchStopsAndCache(List<NearestResponse.JourneyPattern> patterns,
                                     GeoPoint center, int myId) {
@@ -276,7 +281,6 @@ public class MapFragment extends Fragment {
 
         if (unique.isEmpty()) { progressBar.setVisibility(View.GONE); return; }
 
-        // Separa pattern già in cache da quelli da scaricare
         List<NearestResponse.JourneyPattern> toFetch = new ArrayList<>();
         List<NearestResponse.JourneyPattern> cached  = new ArrayList<>();
         for (NearestResponse.JourneyPattern pattern : unique) {
@@ -286,7 +290,7 @@ public class MapFragment extends Fragment {
             else toFetch.add(pattern);
         }
 
-        // Pattern in cache → elabora tutto in UN SOLO runOnUiThread
+        // Pattern in cache → elabora sul main thread
         if (!cached.isEmpty()) {
             requireActivity().runOnUiThread(() -> {
                 if (myId != searchId) return;
@@ -308,7 +312,6 @@ public class MapFragment extends Fragment {
             });
         }
 
-        // Se non ci sono pattern da scaricare, chiudi subito
         if (toFetch.isEmpty()) {
             requireActivity().runOnUiThread(() -> {
                 progressBar.setVisibility(View.GONE);
@@ -317,8 +320,9 @@ public class MapFragment extends Fragment {
             return;
         }
 
-        AtomicInteger pending = new AtomicInteger(toFetch.size());
-        Set<String> addedMarkers = new HashSet<>();
+        AtomicInteger pending      = new AtomicInteger(toFetch.size());
+        AtomicInteger failedCount  = new AtomicInteger(0);
+        Set<String>   addedMarkers = new HashSet<>();
 
         for (NearestResponse.JourneyPattern pattern : toFetch) {
 
@@ -326,30 +330,25 @@ public class MapFragment extends Fragment {
                     .enqueue(new Callback<StopsResponse>() {
                         @Override public void onResponse(@NonNull Call<StopsResponse> c,
                                                          @NonNull Response<StopsResponse> r) {
-                            if (!isAdded() || myId != searchId) return; // ricerca superata: ignora
+                            if (!isAdded() || myId != searchId) return;
                             StopsResponse body = r.body();
                             List<StopsResponse.Stop> stops = body != null ? body.getStops() : null;
                             if (stops != null) {
-                                // ── Costruisce il percorso completo per questo pattern ────
                                 List<GeoPoint> routePts = new ArrayList<>(stops.size());
                                 for (StopsResponse.Stop s : stops)
                                     if (s.location != null)
                                         routePts.add(new GeoPoint(s.location.y, s.location.x));
-                                patternRouteCache.put(pattern.id, routePts);  // CACHE ROUTE
-                                patternStopsCache.put(pattern.id, stops);   // CACHE STOPS (evita re-download)
+                                patternRouteCache.put(pattern.id, routePts);
+                                patternStopsCache.put(pattern.id, stops);
 
                                 requireActivity().runOnUiThread(() -> {
-                                    if (myId != searchId) return; // ricontrolliamo sul main thread
+                                    if (myId != searchId) return;
                                     for (StopsResponse.Stop s : stops) {
                                         if (s.customerCode == null || s.location == null) continue;
-
-                                        // Cache: quale pattern serve questa fermata
                                         stopPatternIds
                                                 .computeIfAbsent(s.customerCode,
                                                         k -> new ArrayList<>())
                                                 .add(pattern.id);
-
-                                        // Piazza marker solo se dentro il raggio
                                         if (distanceMeters(center.getLatitude(),
                                                 center.getLongitude(),
                                                 s.location.y, s.location.x) > RADIUS_M) continue;
@@ -359,27 +358,39 @@ public class MapFragment extends Fragment {
                                     mapView.invalidate();
                                 });
                             }
-                            if (pending.decrementAndGet() == 0 && isAdded())
-                                requireActivity().runOnUiThread(() -> {
-                                    progressBar.setVisibility(View.GONE);
-                                    // Prefetch DOPO che tutti i marker sono pronti:
-                                    // non compete con le richieste di pattern
-                                    for (String code : stopMarkers.keySet())
-                                        prefetchStopDetail(code);
-                                });
+                            checkAllDone(pending, failedCount, myId, false);
                         }
+
                         @Override public void onFailure(@NonNull Call<StopsResponse> c,
                                                         @NonNull Throwable t) {
-                            if (pending.decrementAndGet() == 0 && isAdded())
-                                requireActivity().runOnUiThread(() -> {
-                                    progressBar.setVisibility(View.GONE);
-                                    // Prefetch DOPO che tutti i marker sono pronti:
-                                    // non compete con le richieste di pattern
-                                    for (String code : stopMarkers.keySet())
-                                        prefetchStopDetail(code);
-                                });
+                            Log.w(TAG, "getPatternStops failed for " + pattern.id, t);
+                            checkAllDone(pending, failedCount, myId, true);
                         }
                     });
+        }
+    }
+
+    /**
+     * Chiamato da ogni callback (onResponse/onFailure) di getPatternStops.
+     * Quando tutti i pattern hanno risposto, nasconde il progress e mostra
+     * un eventuale avviso se alcune linee non hanno caricato.
+     */
+    private void checkAllDone(AtomicInteger pending, AtomicInteger failedCount,
+                              int myId, boolean wasFail) {
+        if (wasFail) failedCount.incrementAndGet();
+        if (pending.decrementAndGet() == 0 && isAdded()) {
+            requireActivity().runOnUiThread(() -> {
+                progressBar.setVisibility(View.GONE);
+                for (String code : stopMarkers.keySet()) prefetchStopDetail(code);
+                // Avviso non bloccante se alcune linee non hanno risposto
+                int failed = failedCount.get();
+                if (failed > 0 && myId == searchId) {
+                    String msg = failed == 1
+                            ? "1 linea non ha risposto"
+                            : failed + " linee non hanno risposto";
+                    showToast(msg + " — dati parziali");
+                }
+            });
         }
     }
 
@@ -392,7 +403,7 @@ public class MapFragment extends Fragment {
         FavoritesFragment.newInstance().show(getChildFragmentManager(), "favorites");
     }
 
-    // ── Prefetch dettagli fermata ─────────────────────────────────────────────
+    // ── Prefetch dettagli fermata ─────────────────────────────────────────
 
     private void prefetchStopDetail(String code) {
         if (code == null || StopDetailCache.has(code)) return;
@@ -425,9 +436,7 @@ public class MapFragment extends Fragment {
 
         final String code = stop.customerCode;
         marker.setOnMarkerClickListener((m, mv) -> {
-            // 1. Apre subito il BottomSheet (solo getStopDetail, già veloce)
             StopDetailBottomSheet.showSafely(getChildFragmentManager(), "stop_detail", code, label);
-            // 2. Disegna il percorso DALLA CACHE — nessuna API call extra
             drawRouteFromCache(code);
             return true;
         });
@@ -436,17 +445,12 @@ public class MapFragment extends Fragment {
         stopMarkers.put(stop.customerCode, marker);
     }
 
-    // ── Tratta dalla cache (istantanea) ──────────────────────────────────
+    // ── Tratta dalla cache ───────────────────────────────────────────────
 
-    /**
-     * Disegna i percorsi delle linee che passano per questa fermata
-     * usando i dati già in memoria. Zero chiamate di rete.
-     */
     private void drawRouteFromCache(String customerCode) {
         clearRoutes();
         List<String> patterns = stopPatternIds.get(customerCode);
         if (patterns == null || patterns.isEmpty()) {
-            // Fallback: se la fermata non era nel raggio originale, fetcha dall'API
             drawRouteFromApi(customerCode);
             return;
         }
@@ -458,10 +462,6 @@ public class MapFragment extends Fragment {
         }
     }
 
-    /**
-     * Fallback: chiama getStopDetail per ottenere i journeyPatternId,
-     * poi carica i percorsi. Usato raramente (solo fermate fuori dal raggio).
-     */
     private void drawRouteFromApi(String customerCode) {
         ApiClient.get().getStopDetail(customerCode)
                 .enqueue(new Callback<StopDetail>() {
@@ -476,7 +476,6 @@ public class MapFragment extends Fragment {
                             if (!drawn.add(entry.journeyPatternId)) continue;
                             String lc = entry.line != null ? entry.line.lineCode : "0";
                             int color = routeColor(lc);
-                            // Usa la cache se già disponibile
                             List<GeoPoint> cached = patternRouteCache.get(entry.journeyPatternId);
                             if (cached != null && cached.size() > 1) {
                                 requireActivity().runOnUiThread(() -> renderRoute(cached, color));
@@ -540,7 +539,7 @@ public class MapFragment extends Fragment {
         return Color.parseColor("#0266ad");
     }
 
-    // ── Cerchio raggio BLU ───────────────────────────────────────────────
+    // ── Cerchio raggio ───────────────────────────────────────────────────
 
     public void drawRadius(GeoPoint center) {
         if (radiusCircle != null) mapView.getOverlays().remove(radiusCircle);
@@ -562,7 +561,7 @@ public class MapFragment extends Fragment {
     }
 
     private void clearAll() {
-        searchId++; // invalida tutte le risposte API in volo
+        searchId++;
         StopDetailCache.clear();
         clearRoutes();
         for (Marker m : stopMarkers.values()) mapView.getOverlays().remove(m);
@@ -571,9 +570,6 @@ public class MapFragment extends Fragment {
             mapView.getOverlays().remove(radiusCircle);
             radiusCircle = null;
         }
-        // NON svuotiamo patternRouteCache e patternLineCode:
-        // i percorsi delle linee sono stabili → tap successivi riusano i dati già scaricati
-        // Solo stopPatternIds viene svuotato perché dipende dall'area attiva
         stopPatternIds.clear();
         mapView.invalidate();
     }
@@ -590,9 +586,15 @@ public class MapFragment extends Fragment {
         return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
+    // ── Utility ──────────────────────────────────────────────────────────
+
+    private void showToast(String msg) {
+        if (!isAdded() || getContext() == null) return;
+        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+    }
+
     // ── Lifecycle ────────────────────────────────────────────────────────
 
-    /** Con show/hide il fragment non viene distrutto: gestisce resume/pause tramite onHiddenChanged */
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
